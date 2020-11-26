@@ -14,9 +14,11 @@ public class Main extends Application {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/MainView.fxml"));
 			ScrollPane scrollPane = loader.load();
+			
 			//ajustar scrollpane com a menubar
 			scrollPane.setFitToHeight(true);
 			scrollPane.setFitToWidth(true);
+			
 			Scene mainScene = new Scene(scrollPane);
 			primaryStage.setScene(mainScene);
 			primaryStage.setTitle("JavaFX application");
