@@ -62,6 +62,7 @@ public class MainViewController implements Initializable {
 		try {
 			// instanciando um FXML a partir de um caminho do projeto
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+			//carrega novo VBox da tela carregada
 			VBox newVBox = loader.load();
 
 			// mainScene recebe o ScrollPane da classe Main
@@ -81,10 +82,10 @@ public class MainViewController implements Initializable {
 			// adiciona na tela principal a MenuBar
 			mainVBox.getChildren().add(mainMenu);
 
-			// adiciona na tela principal, todos os filhos do newVBox
+			// adiciona na tela principal, todos os filhos do newVBox(tela carregada pelo loadView)
 			mainVBox.getChildren().addAll(newVBox.getChildren());
 
-			// executa a funçao passada como argumento no método
+			//inicializa o controller passado no método
 			T controller = loader.getController();
 			initializingAction.accept(controller);
 

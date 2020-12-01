@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-
 import application.Main;
 import gui.util.Alerts;
 import javafx.collections.FXCollections;
@@ -46,6 +45,7 @@ public class DepartmentListController implements Initializable {
 	
 	@FXML
 	public void onBtNewAction(ActionEvent event) {
+		//acessando o Stage a partir do parâmetro
 		Stage parentStage = gui.util.Utils.currentStage(event);
 		Department obj = new Department();
 		createDialogForm(obj, "/gui/DepartmentForm.fxml", parentStage);
@@ -66,9 +66,9 @@ public class DepartmentListController implements Initializable {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("Id"));
 		TableColumnName.setCellValueFactory(new PropertyValueFactory<>("Name"));
 
-		//referência para tela
+		//referência para Stage atual
 		Stage stage = (Stage) Main.getMainScene().getWindow();
-		//aumenta a tableView ao tamanho da tela
+		//tableView acompanha a altura da janela
 		tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
 	}
 	
@@ -86,15 +86,23 @@ public class DepartmentListController implements Initializable {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
 			
+			//referência para controlador
 			DepartmentFormController controller = loader.getController();
+			//injetando dependência no controlador
 			controller.setDepartment(obj);
+			controller.setDepartmentService(new DepartmentService());
+			//carregando os dados no formulário
 			controller.updateFormData();
 			
+			//instancia de um novo palco para carregar a tela modal
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Enter Department data");
+			
 			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
+			//Stage pai da janela
 			dialogStage.initOwner(parentStage);
+			//janela do tipo modal, enquanto vc não fechar ela, vc não pode acessar a anterior
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 			
