@@ -78,6 +78,7 @@ public class DepartmentListController implements Initializable, DataChangeListen
 		List<Department> list = service.findAll();
 		obsList = FXCollections.observableArrayList(list);
 		tableViewDepartment.setItems(obsList);
+		
 	}
 	
 	private void createDialogForm(Department obj, String absoluteName, Stage parentStage) {

@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
 import gui.listener.DataChangeListener;
@@ -18,14 +20,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Department;
+import model.exceptions.ValidationException;
 import model.services.DepartmentService;
 
 public class DepartmentFormController implements Initializable {
 
 	private Department entity;
-	
+
 	private DepartmentService service;
-	
+
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
 	public void setDepartmentService(DepartmentService service) {
@@ -39,7 +42,7 @@ public class DepartmentFormController implements Initializable {
 	public void subscribeDataChangeListener(DataChangeListener listener) {
 		dataChangeListeners.add(listener);
 	}
-	
+
 	@FXML
 	private TextField txtId;
 
@@ -66,28 +69,47 @@ public class DepartmentFormController implements Initializable {
 		try {
 			entity = getFormData();
 			service.saveOrUpdate(entity);
-			//pegando referencia da tela atual e fechando.
+			// pegando referencia da tela atual e fechando.
 			notifyDataChangeListeners();
 			Utils.currentStage(event).close();
-		} catch (DbException e) {
+			
+			
+		}
+		catch(ValidationException e) {
+			setErrorMessages(e.getErrors());
+		}
+		catch (DbException e) {
 			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
 		}
 	}
 
-	//método que notifica as mudanças na lista(Classe subject - emite o evento)
+	// método que notifica as mudanças na lista(Classe subject - emite o evento)
 	private void notifyDataChangeListeners() {
-		for(DataChangeListener listener : dataChangeListeners) {
+		for (DataChangeListener listener : dataChangeListeners) {
 			listener.onDataChanged();
 		}
-		
+
 	}
 
 	private Department getFormData() {
 		Department obj = new Department();
+
+		ValidationException exception = new ValidationException("Validation error");
+
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
+
+		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
+			exception.addErros("name", "Field can't be empty");
+		}
 		obj.setName(txtName.getText());
+
+		if (exception.getErrors().size() > 0) {
+			throw exception;
+		}
 		return obj;
 	}
+	
+	
 
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
@@ -112,5 +134,16 @@ public class DepartmentFormController implements Initializable {
 		}
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
+	}
+	
+	//percorrendo a coleção e preenchendo as caixas de texto com os erros
+	private void setErrorMessages(Map<String, String> errors) {
+		Set<String> fields = errors.keySet();
+		
+		//se na coleção de chaves Set, conter o name, ele seta a mensagem de erro no label
+		if(fields.contains("name")) {
+			labelErrorName.setText(errors.get("name"));			
+		}
+		
 	}
 }
