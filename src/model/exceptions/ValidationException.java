@@ -13,7 +13,7 @@ public class ValidationException extends RuntimeException {
 		super(msg);
 	}
 	
-	//coleção map com chave:name e valor:error
+	//retorna coleção map com chave:name e valor:error
 	public Map<String, String> getErrors(){
 		return errors;
 	}

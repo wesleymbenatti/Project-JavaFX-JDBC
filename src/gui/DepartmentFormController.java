@@ -39,6 +39,7 @@ public class DepartmentFormController implements Initializable {
 		this.entity = entity;
 	}
 
+	// outros objetos que implementar essa classe, recebem o evento
 	public void subscribeDataChangeListener(DataChangeListener listener) {
 		dataChangeListeners.add(listener);
 	}
@@ -67,19 +68,19 @@ public class DepartmentFormController implements Initializable {
 			throw new IllegalStateException("Service was null");
 		}
 		try {
+			// pega os dados das caixinhas e instancia um departament
 			entity = getFormData();
+			// salvando no banco de dados
 			service.saveOrUpdate(entity);
-			// pegando referencia da tela atual e fechando.
+			// notifica os listeners
 			notifyDataChangeListeners();
+			// pegando referencia da tela atual e fechando.
 			Utils.currentStage(event).close();
-			
-			
-		}
-		catch(ValidationException e) {
-			setErrorMessages(e.getErrors());
-		}
-		catch (DbException e) {
+
+		} catch (DbException e) {
 			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
+		} catch (ValidationException e) {
+			setErrorMessages(e.getErrors());
 		}
 	}
 
@@ -98,6 +99,7 @@ public class DepartmentFormController implements Initializable {
 
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
 
+		//campo nome não pode estar vazio
 		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
 			exception.addErros("name", "Field can't be empty");
 		}
@@ -108,8 +110,6 @@ public class DepartmentFormController implements Initializable {
 		}
 		return obj;
 	}
-	
-	
 
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
@@ -135,15 +135,16 @@ public class DepartmentFormController implements Initializable {
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
 	}
-	
-	//percorrendo a coleção e preenchendo as caixas de texto com os erros
+
+	// percorrendo a coleção e preenchendo as caixas de texto com os erros
 	private void setErrorMessages(Map<String, String> errors) {
 		Set<String> fields = errors.keySet();
-		
-		//se na coleção de chaves Set, conter o name, ele seta a mensagem de erro no label
-		if(fields.contains("name")) {
-			labelErrorName.setText(errors.get("name"));			
+
+		// se na coleção de chaves Set, conter o name, ele seta a mensagem de erro no
+		// label
+		if (fields.contains("name")) {
+			labelErrorName.setText(errors.get("name"));
 		}
-		
+
 	}
 }

@@ -13,7 +13,7 @@ public class Main extends Application {
 	//guardando referência
 	private static Scene mainScene;
 	
-	@Override
+	
 	public void start(Stage primaryStage) {
 		try {
 			//instancia de um objeto fxml
